@@ -1,0 +1,26 @@
+import bcrypt
+from jose import jwt
+from datetime import datetime, timedelta
+
+SECRET_KEY = "SECRET123"
+ALGORITHM = "HS256"
+
+def hash_password(password: str) -> str:
+    """Hash a password using bcrypt"""
+    password_bytes = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password_bytes, salt)
+    return hashed.decode('utf-8')
+
+def verify_password(password: str, hashed: str) -> bool:
+    """Verify a password against a hash"""
+    password_bytes = password.encode('utf-8')
+    hashed_bytes = hashed.encode('utf-8')
+    return bcrypt.checkpw(password_bytes, hashed_bytes)
+
+def create_token(email):
+    payload = {
+        "sub": email,
+        "exp": datetime.utcnow() + timedelta(hours=1)
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
